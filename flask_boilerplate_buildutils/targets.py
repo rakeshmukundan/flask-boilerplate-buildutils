@@ -2,6 +2,10 @@ from maketools import Target
 import os
 
 class StandardVirtualEnvTarget(Target):
+    """
+    A target to install and configure a pip3 virtualenv and 
+    install all the needed requirements.
+    """
     depends = ('requirements.txt',)
     output = './.venv/setup'
     sh_build_commands = (
@@ -13,6 +17,10 @@ class StandardVirtualEnvTarget(Target):
 
 
 class StandardMySQLDBTarget(Target):
+    """
+    A target for use with a MySQL configuration. Performs required database 
+    creation and dropping when needed.
+    """
     echo = True
 
     sh_clean_commands = (
@@ -27,6 +35,10 @@ class StandardMySQLDBTarget(Target):
 
 
 class StandardRegenerateTarget(Target):
+    """
+    A target to compile less files to css and do automatic imports for
+    the python modules.
+    """
     echo = False
     always_build = True
     depends = ('requirements.txt',)
@@ -38,8 +50,14 @@ class StandardRegenerateTarget(Target):
     
 
 class StandardSQLiteTarget(Target):
+    """
+    A target for use with an SQLite configuration class.
+    """
     sh_clean_commands = ('rm -rf ./Application/{DB_BASE}.db',)
 
 
 class StandardTestTarget(Target):
+    """
+    A target for use when performing tests.
+    """
     depends = ()
