@@ -47,7 +47,7 @@ class BaseConfiguration(object):
             # Mysql connect string
             uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASS}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
         elif cls.DB_DRIVER.startswith('sqlite'):
-            uri = '{DB_DRIVER}://{DB_DATABASE}.db'.format(DB_DRIVER=cls.DB_DRIVER, DB_DATABASE=cls.DB_DATABASE)
+            uri = '{DB_DRIVER}:///{DB_DATABASE}.db'.format(DB_DRIVER=cls.DB_DRIVER, DB_DATABASE=cls.DB_DATABASE)
         else:
             raise Exception("DB_DRIVER '{DB_DRIVER}' was used but flask-boilerplate-buildutils doesn't "\
                 "know how to implement it. Please manually specify a SQLALCHEMY_DATABASE_URI variable".format(
