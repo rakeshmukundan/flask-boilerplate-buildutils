@@ -1,6 +1,12 @@
 import os, sys, inspect
 from .targets import StandardVirtualEnvTarget
 
+class classproperty(object):
+     def __init__(self, getter):
+         self.getter= getter
+     def __get__(self, instance, owner):
+         return self.getter(owner)
+
 class BaseConfiguration(object):
     """
     :var dependencies: A tuple containing maketools.Target objects.
@@ -9,13 +15,19 @@ class BaseConfiguration(object):
 
     dependencies = (StandardVirtualEnvTarget,)
 
+    DB_DRIVER = ''
+    DB_USERNAME = ''
+    DB_HOST = ''
+    DB_PASS = ''
+    DB_DATABASE = ''
+
     @classmethod
     def diction(cls):
         """
         Get the class's variable so we can pass them to build when
         we build the targets
         """
-        diction = {name: getattr(cls, name) for name in dir(cls) if not name.startswith('__') }
+        diction = {name: getattr(cls, name) for name in dir(cls) if not name.startswith('__') and name != 'SQLALCHEMY_DATABASE_URI'}
         return diction
 
     @classmethod
@@ -28,7 +40,21 @@ class BaseConfiguration(object):
             target = TargetClass()
             target.build(format_dict=cls.diction())
 
-
+    @classproperty
+    def SQLALCHEMY_DATABASE_URI(cls):
+        uri = ''
+        if cls.DB_DRIVER.startswith('mysql') or cls.DB_DRIVER.startswith('postgres'):
+            # Mysql connect string
+            uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASS}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
+        elif cls.DB_DRIVER.startswith('sqlite'):
+            uri = '{DB_DRIVER}://{DB_DATABASE}.db'.format(DB_DRIVER=cls.DB_DRIVER, DB_DATABASE=cls.DB_DATABASE)
+        else:
+            raise Exception("DB_DRIVER '{DB_DRIVER}' was used but flask-boilerplate-buildutils doesn't "\
+                "know how to implement it. Please manually specify a SQLALCHEMY_DATABASE_URI variable".format(
+                    DB_DRIVER=cls.DB_DRIVER
+                    )
+                )
+        return uri
 
 def choose_config(config_module):
     """
