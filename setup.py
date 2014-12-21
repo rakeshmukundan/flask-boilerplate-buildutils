@@ -3,13 +3,13 @@ from setuptools import setup
 
 readme_path = os.path.join(os.path.dirname(
   os.path.abspath(__file__)),
-  'README.md',
+  'README.rst',
 )
 long_description = open(readme_path).read()
 
 setup(
   name='flask-boilerplate-buildutils',
-  version='0.1.0',
+  version='0.1.1',
   packages=['flask_boilerplate_buildutils'],
   author="Nick Whyte",
   author_email='nick@nickwhyte.com',
