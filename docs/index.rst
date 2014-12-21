@@ -20,6 +20,7 @@ flask_boilerplate_buildutils.configuration
     :members: build_dependencies
 
 .. autofunction:: choose_config
+.. autofunction:: make_keys
 
 flask_boilerplate_buildutils.targets
 --------------------------------------------------------

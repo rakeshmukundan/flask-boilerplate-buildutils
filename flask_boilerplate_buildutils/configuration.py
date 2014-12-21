@@ -30,7 +30,18 @@ class BaseConfiguration(object):
 
 
 
-def choose_config(config_module,**kwargs):
+def choose_config(config_module):
+    """
+    Configuration switching function.
+    -c CONFIG_CLASS in argv or set an environment variable FLASK_CONFIG=CONFIG_CLASS
+    to have the configuration loaded automatically.
+
+    :param config_module: the module in which you have imported your 
+                          configuration classes
+                          ie, `choose_config(config_module=sys.modules[__name__])`
+                          if you whish to choose a config class defined in the current
+                          file.
+    """
     if '-c' in sys.argv:
         class_name = sys.argv[sys.argv.index('-c') + 1]
     elif '--config' in sys.argv:
@@ -48,9 +59,9 @@ def choose_config(config_module,**kwargs):
 
     raise Exception("Configuration class '%s' could not be found." % (class_name))
 
-if __name__ == '__main__':
+def make_keys():
     """
-    Generate the Security keys on the fly if they do not exist in the repo
+    Generate/open the security keys on the fly and return them in a dictionary
     """
     d = './config/'
     salt_file = os.path.realpath(os.path.join(d, './salt.key'))
@@ -76,3 +87,7 @@ if __name__ == '__main__':
         with open(security_key_file, 'w') as f:
             SECRET_KEY = "%s%s%s" % (uuid.uuid4().hex, uuid.uuid4().hex, uuid.uuid4().hex)
             f.write(SECRET_KEY)
+
+    return {'SECURITY_PASSWORD_SALT': SECURITY_PASSWORD_SALT,
+            'SECRET_KEY': SECRET_KEY
+            }
