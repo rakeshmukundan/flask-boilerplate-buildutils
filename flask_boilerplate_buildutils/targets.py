@@ -8,10 +8,10 @@ class StandardVirtualEnvTarget(Target):
     install all the needed requirements.
     """
     always_build= False
-    depends = ('requirements.txt',)
+    depends = ('./Application/requirements.txt',)
     output = './.venv/setup'
     sh_build_commands = (
-        patched_command('pip3 install -r requirements.txt --upgrade'),
+        patched_command('pip3 install -r ./Application/requirements.txt --upgrade'),
         )
     def py_build_commands(self):
         if os.system('which virtualenv'):
@@ -33,10 +33,10 @@ class StandardMySQLDBTarget(Target):
         'echo "DROP DATABASE IF EXISTS {DB_DATABASE};" | mysql -u {DB_USERNAME}',)
     
     sh_build_commands = (
-        patched_command('pip3 install -r requirements-mysql.txt --upgrade'),
+        patched_command('pip3 install -r ./Application/requirements-mysql.txt --upgrade'),
         'echo "CREATE DATABASE IF NOT EXISTS {DB_DATABASE}" | mysql -u {DB_USERNAME}',)
 
-    depends = ('requirements-mysql.txt',)
+    depends = ('./Application/requirements-mysql.txt',)
     output = './.venv/db'
 
 class StandardCIMySQLDBTarget(StandardMySQLDBTarget):
@@ -52,15 +52,41 @@ class StandardRegenerateTarget(Target):
     A target to compile less files to css and do automatic imports for
     the python modules.
     """
-    echo = False
+    echo = True
     always_build = True
     depends = ('requirements.txt',)
     
 
-    sh_build_commands = ('./util/compile.sh ./Application/static/css > /dev/null',
-                         './util/regenerate.sh ./Application/models Model > /dev/null',
-                         './util/regenerate.sh ./Application/views View > /dev/null')
+    sh_build_commands = (
+        'lesscpy -X -m -V -r -o ./Application/static/css/  ./Application/static/css/',
+        )
     
+    def py_build_commands(self):
+        folders_to_include = ['./Application/models', './Application/views']
+        for folder in folders_to_include:
+            print (folder)
+            names = []
+            for root, dirs, files in os.walk(folder):
+                with open(os.path.join(root, '__init__.py'), 'w') as fh:
+
+                    for dir in dirs:
+                        if not dir.startswith('_'):
+                            # Recursively add folders. (BFS with a queue.)
+                            module = os.path.join(root, dir)
+                            folders_to_include.append(module)
+                            # And import them recursively too.
+                            fh.write('from .{module} import *\n'.format(module=os.path.basename(module)))
+                    
+                    for file in files:
+                        if file.endswith('.py') and not file.startswith('_') and \
+                            os.path.dirname(os.path.join(root,file)) == folder:
+                            filename, ext = os.path.splitext(file)
+                            names.append(filename)
+
+                    for filename in names:
+                        fh.write('from .{module} import {module}\n'.format(module=filename))
+
+
 
 class StandardSQLiteTarget(Target):
     """

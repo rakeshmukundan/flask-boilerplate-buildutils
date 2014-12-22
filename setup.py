@@ -6,10 +6,17 @@ readme_path = os.path.join(os.path.dirname(
   'README.rst',
 )
 long_description = open(readme_path).read()
+version_path = os.path.join(os.path.dirname(
+  os.path.abspath(__file__)),
+  'VERSION',
+)
+version = open(version_path).read()
+
+
 
 setup(
   name='flask-boilerplate-buildutils',
-  version='0.1.7',
+  version=version,
   packages=['flask_boilerplate_buildutils'],
   author="Nick Whyte",
   author_email='nick@nickwhyte.com',
@@ -20,6 +27,7 @@ setup(
   zip_safe=False,
   install_requires=[
     'maketools',
-    'virtualenv'
+    'virtualenv',
+    'lesscpy'
   ],
 )
