@@ -39,6 +39,13 @@ class StandardMySQLDBTarget(Target):
     depends = ('requirements-mysql.txt',)
     output = './.venv/db'
 
+class StandardCIMySQLDBTarget(StandardMySQLDBTarget):
+    """
+    A target for use with CI. Same as MYSQL Target except has 
+    a different output file so the CI Target gets made even
+    if the MySQL target has been made
+    """
+    output = './.venv/ci'
 
 class StandardRegenerateTarget(Target):
     """
