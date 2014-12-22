@@ -2,7 +2,11 @@ import os
 import sys
 def run_app(runfile=None):
 	"""
-	Helper to run the app. Serious hackery.
+	Helper function to run the application in the current
+	working directory.
+
+	:param runfile: Specify a python file to be executed with a relative
+					path. (default None)
 	"""
 	if (len(sys.argv) > 1) and not runfile:
 		f = './{}.py'.format(sys.argv[1])
@@ -25,14 +29,21 @@ def run_app(runfile=None):
 
 def patched_command(command):
 	"""
-	Patches a command to use the virtualenvironment.
+	Returns a patched shell command that will be executed inside
+	the context of a virtual environment
+
+	:param command: The command to be wrapped in the patching commands.
 	"""
 	return 'source ./.venv/bin/activate && unset __PYVENV_LAUNCHER__'\
 		' && {command}'.format(command=command)
 
 def patch_cwd(filepath=None):
 	"""
-	Force working directory patch on startup.
+	Patch the current working directory to the caller's filepath.
+
+	:param filepath: Set a filepath to become the current working
+					 directory. If unspecified, the caller's __file__
+					 path is used. 
 	"""
 	if not filepath:
 		import inspect

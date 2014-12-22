@@ -11,4 +11,5 @@ Submodules
    :maxdepth: 2
    
    configuration
+   run
    targets
