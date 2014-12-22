@@ -1,4 +1,5 @@
 from maketools import Target
+from .run import patched_command
 import os
 
 class StandardVirtualEnvTarget(Target):
@@ -6,12 +7,17 @@ class StandardVirtualEnvTarget(Target):
     A target to install and configure a pip3 virtualenv and 
     install all the needed requirements.
     """
+    always_build= False
     depends = ('requirements.txt',)
     output = './.venv/setup'
     sh_build_commands = (
-        './.venv/bin/pip3 install -r requirements.txt --upgrade',
+        patched_command('pip3 install -r requirements.txt --upgrade'),
         )
     def py_build_commands(self):
+        if os.system('which virtualenv'):
+            raise Exception("Virtualenv not installed on your system. "\
+                "Have you installed flask-boilerplate-buildutils?")
+
         if not os.path.exists('./.venv'):
             os.system('virtualenv ./.venv -p /usr/bin/python3',)
 
@@ -27,7 +33,7 @@ class StandardMySQLDBTarget(Target):
         'echo "DROP DATABASE IF EXISTS {DB_DATABASE};" | mysql -u {DB_USERNAME}',)
     
     sh_build_commands = (
-        './.venv/bin/pip3 install -r requirements-mysql.txt --upgrade',
+        patched_command('pip3 install -r requirements-mysql.txt --upgrade'),
         'echo "CREATE DATABASE IF NOT EXISTS {DB_DATABASE}" | mysql -u {DB_USERNAME}',)
 
     depends = ('requirements-mysql.txt',)
