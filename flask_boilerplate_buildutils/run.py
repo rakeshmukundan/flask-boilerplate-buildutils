@@ -1,9 +1,18 @@
 import os
 import sys
-def run_app(runfile='./run.py'):
+def run_app(runfile=None):
 	"""
 	Helper to run the app. Serious hackery.
 	"""
+	if (len(sys.argv) > 1) and not runfile:
+		f = './{}.py'.format(sys.argv[1])
+		if os.path.isfile(f):
+			runfile = f
+			sys.argv.pop(1)
+
+	if not runfile:
+		runfile = './run.py'
+
 	os.system(patched_command(
 		'python3 {runfile} {args}'.format(
 			runfile=runfile,
