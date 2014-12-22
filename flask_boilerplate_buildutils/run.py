@@ -6,7 +6,7 @@ def run_app(runfile=None):
 	working directory.
 
 	:param runfile: Specify a python file to be executed with a relative
-					path. (default None)
+					path. (default ./run.py)
 	"""
 	if (len(sys.argv) > 1) and not runfile:
 		f = './{}.py'.format(sys.argv[1])
