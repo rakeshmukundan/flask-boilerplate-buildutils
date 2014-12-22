@@ -20,3 +20,16 @@ def patched_command(command):
 	"""
 	return 'source ./.venv/bin/activate && unset __PYVENV_LAUNCHER__'\
 		' && {command}'.format(command=command)
+
+def patch_cwd(filepath=None):
+	"""
+	Force working directory patch on startup.
+	"""
+	if not filepath:
+		import inspect
+		frame = inspect.stack()[1]
+		module = inspect.getmodule(frame[0])
+		filepath = module.__file__
+
+	cwd = os.path.dirname(os.path.abspath(filepath))
+	os.chdir(cwd)
