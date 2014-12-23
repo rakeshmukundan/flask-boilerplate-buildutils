@@ -64,7 +64,6 @@ class StandardRegenerateTarget(Target):
     def py_build_commands(self):
         folders_to_include = ['./Application/models', './Application/views']
         for folder in folders_to_include:
-            print (folder)
             names = []
             for root, dirs, files in os.walk(folder):
                 with open(os.path.join(root, '__init__.py'), 'w') as fh:
@@ -83,7 +82,7 @@ class StandardRegenerateTarget(Target):
                             filename, ext = os.path.splitext(file)
                             names.append(filename)
 
-                    for filename in names:
+                    for filename in sorted(names):
                         fh.write('from .{module} import {module}\n'.format(module=filename))
 
 
