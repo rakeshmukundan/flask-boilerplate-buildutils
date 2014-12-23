@@ -34,8 +34,8 @@ def patched_command(command):
 
 	:param command: The command to be wrapped in the patching commands.
 	"""
-	return 'source ./.venv/bin/activate && unset __PYVENV_LAUNCHER__'\
-		' && {command}'.format(command=command)
+	return '/usr/bin/env bash -c "source ./.venv/bin/activate && unset __PYVENV_LAUNCHER__'\
+		' && {command}"'.format(command=command)
 
 def patch_cwd(filepath=None):
 	"""
