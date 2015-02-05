@@ -19,7 +19,7 @@ class StandardVirtualEnvTarget(Target):
                 "Have you installed flask-boilerplate-buildutils?")
 
         if not os.path.exists('./.venv'):
-            os.system('virtualenv ./.venv -p `which python3`',)
+            os.system('virtualenv ./.venv -p `which python3.4`',)
 
 
 class StandardMySQLDBTarget(Target):
