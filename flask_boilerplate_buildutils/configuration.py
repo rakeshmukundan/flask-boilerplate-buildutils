@@ -45,7 +45,7 @@ class BaseConfiguration(object):
         uri = ''
         if cls.DB_DRIVER.startswith('mysql') or cls.DB_DRIVER.startswith('postgres'):
             # Mysql connect string
-            uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASS}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
+            uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
         elif cls.DB_DRIVER.startswith('sqlite'):
             uri = '{DB_DRIVER}:///{DB_DATABASE}.db'.format(DB_DRIVER=cls.DB_DRIVER, DB_DATABASE=cls.DB_DATABASE)
         else:
