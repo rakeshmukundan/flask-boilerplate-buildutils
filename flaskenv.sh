@@ -2,23 +2,6 @@
 
 
 if [ -e '.env' ]; then
-
-    if type deactivate &> /dev/null; then
-        deactivate;
-    fi
-
-    if [ -e .venv/bin/activate ]; then
-        . .venv/bin/activate;
-    else
-        virtualenv -p `which python3.4` .venv;
-        . .venv/bin/activate;
-        upgrade;
-        setup_db;
-    fi
-
-    export VENV_DIR=`pwd`;
-
-
     upgrade() {
         pip3 install -r reqs/requirements.txt --upgrade;
         CONFIG_CLASS=`python3.4 -m config`
@@ -43,6 +26,9 @@ if [ -e '.env' ]; then
         if ! [[ `pwd` == $VENV_DIR* ]]; then
             # User just left the venv. Return them to their normal CD functionality.
             deactivate;
+            unset -f setup_db;
+            unset -f upgrade;
+            
             cd() {
                 builtin cd "$@"
                 if type autoenv_init &> /dev/null; then
@@ -51,5 +37,21 @@ if [ -e '.env' ]; then
             }
         fi
     }
+
+
+    if type deactivate &> /dev/null; then
+        deactivate;
+    fi
+
+    if [ -e .venv/bin/activate ]; then
+        . .venv/bin/activate;
+    else
+        virtualenv -p `which python3.4` .venv;
+        . .venv/bin/activate;
+        upgrade;
+        setup_db;
+    fi
+
+    export VENV_DIR=`pwd`;
 
 fi
