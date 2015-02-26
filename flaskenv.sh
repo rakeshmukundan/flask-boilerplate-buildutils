@@ -18,3 +18,14 @@ upgrade() {
     test -e "reqs/requirements-${CONFIG_CLASS}.txt" && 
     pip3 install -r "reqs/requirements-${CONFIG_CLASS}.txt" --upgrade
 }
+
+setup_db() {
+    CONFIG_CLASS=`python3.4 -m config`
+    DB_DATABASE=`python3.4 -m config -k DB_DATABASE`
+    DB_USERNAME=`python3.4 -m config -k DB_USERNAME`
+
+    case $CONFIG_CLASS in
+        MySQLStd)  echo "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE}" | mysql -u ${DB_USERNAME};;
+        CI)  echo "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE}" | mysql -u ${DB_USERNAME};;
+    esac
+}
