@@ -30,5 +30,5 @@ setup(
     'virtualenv',
     'lesscpy'
   ],
-  scripts=['flaskenv.sh', 'flaskboiler.mk.sh']
+  scripts=['flaskenv.sh']
 )
