@@ -1,5 +1,4 @@
 import os, sys, inspect
-from .targets import StandardVirtualEnvTarget
 
 class classproperty(object):
      def __init__(self, getter):
@@ -12,8 +11,6 @@ class BaseConfiguration(object):
     :var dependencies: A tuple containing maketools.Target objects.
                        Used when building dependencies for a config.
     """
-
-    dependencies = (StandardVirtualEnvTarget,)
 
     DB_DRIVER = ''
     DB_USERNAME = ''
@@ -30,22 +27,16 @@ class BaseConfiguration(object):
         diction = {name: getattr(cls, name) for name in dir(cls) if not name.startswith('__') and name != 'SQLALCHEMY_DATABASE_URI'}
         return diction
 
-    @classmethod
-    def build_dependencies(cls):
-        """
-        Read the dependencies for this configuration class and 
-        perform their build function. (Using maketools)
-        """
-        for TargetClass in cls.dependencies:
-            target = TargetClass()
-            target.build(format_dict=cls.diction())
-
     @classproperty
     def SQLALCHEMY_DATABASE_URI(cls):
         uri = ''
         if cls.DB_DRIVER.startswith('mysql') or cls.DB_DRIVER.startswith('postgres'):
             # Mysql connect string
-            uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
+            if cls.diction().get('DB_PASSWORD'):
+                uri = '{DB_DRIVER}://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
+            else:
+                uri = '{DB_DRIVER}://{DB_USERNAME}@{DB_HOST}/{DB_DATABASE}'.format(**cls.diction())
+
         elif cls.DB_DRIVER.startswith('sqlite'):
             uri = '{DB_DRIVER}:///{DB_DATABASE}.db'.format(DB_DRIVER=cls.DB_DRIVER, DB_DATABASE=cls.DB_DATABASE)
         else:
@@ -61,7 +52,6 @@ def choose_config(config_module):
     Configuration switching function.
     -c CONFIG_CLASS in argv or set an environment variable FLASK_CONFIG=CONFIG_CLASS
     to have the configuration loaded automatically.
-
     :param config_module: the module in which you have imported your 
                           configuration classes
                           ie, `choose_config(config_module=sys.modules[__name__])`
@@ -85,11 +75,11 @@ def choose_config(config_module):
 
     raise Exception("Configuration class '%s' could not be found." % (class_name))
 
-def make_keys():
+def make_keys(save_location=None):
     """
     Generate/open the security keys on the fly and return them in a dictionary
     """
-    d = './config/'
+    d = save_location or './'
     salt_file = os.path.realpath(os.path.join(d, './salt.key'))
     security_key_file = os.path.realpath(os.path.join(d, './security.key'))
 
