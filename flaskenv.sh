@@ -15,6 +15,6 @@ fi
 upgrade() {
     pip3 install -r reqs/requirements.txt --upgrade;
     CONFIG_CLASS=`python3 -m config`
-    test -e 'reqs/requirements-${CONFIG_CLASS}.txt' && 
-    pip3 install -r 'reqs/requirements-${CONFIG_CLASS}.txt' --upgrade
+    test -e "reqs/requirements-${CONFIG_CLASS}.txt" && 
+    pip3 install -r "reqs/requirements-${CONFIG_CLASS}.txt" --upgrade
 }
