@@ -2,17 +2,20 @@
 
 
 if [ -e '.env' ]; then
+
+    : ${PYTHON_BINARY=python3.4}
+
     upgrade() {
-        pip3 install -r reqs/requirements.txt --upgrade;
-        CONFIG_CLASS=`python3.4 -m config`
+        pip install -r reqs/requirements.txt --upgrade;
+        CONFIG_CLASS=`$PYTHON_BINARY -m config`
         test -e "reqs/requirements-${CONFIG_CLASS}.txt" && 
-        pip3 install -r "reqs/requirements-${CONFIG_CLASS}.txt" --upgrade
+        pip install -r "reqs/requirements-${CONFIG_CLASS}.txt" --upgrade
     }
 
     setup_db() {
-        CONFIG_CLASS=`python3.4 -m config`
-        DB_DATABASE=`python3.4 -m config -k DB_DATABASE`
-        DB_USERNAME=`python3.4 -m config -k DB_USERNAME`
+        CONFIG_CLASS=`$PYTHON_BINARY -m config`
+        DB_DATABASE=`$PYTHON_BINARY -m config -k DB_DATABASE`
+        DB_USERNAME=`$PYTHON_BINARY -m config -k DB_USERNAME`
 
         case $CONFIG_CLASS in
             MySQLStd)  echo "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE}" | mysql -u ${DB_USERNAME};;
@@ -28,6 +31,7 @@ if [ -e '.env' ]; then
             deactivate;
             unset -f setup_db;
             unset -f upgrade;
+            unset -f PYTHON_BINARY;
             
             cd() {
                 builtin cd "$@"
@@ -46,7 +50,7 @@ if [ -e '.env' ]; then
     if [ -e .venv/bin/activate ]; then
         . .venv/bin/activate;
     else
-        virtualenv -p `which python3.4` .venv;
+        virtualenv -p `which $PYTHON_BINARY` .venv;
         . .venv/bin/activate;
         upgrade;
         setup_db;
@@ -54,4 +58,5 @@ if [ -e '.env' ]; then
 
     export VENV_DIR=`pwd`;
 
+    unset PYTHON_BINARY;
 fi
