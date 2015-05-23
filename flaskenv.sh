@@ -4,18 +4,19 @@
 if [ -e '.env' ]; then
 
     : ${PYTHON_BINARY=python3.4}
+    __PYTHON_BINARY=$PYTHON_BINARY
 
     upgrade() {
         pip install -r reqs/requirements.txt --upgrade;
-        CONFIG_CLASS=`$PYTHON_BINARY -m config`
+        CONFIG_CLASS=`$__PYTHON_BINARY -m config`
         test -e "reqs/requirements-${CONFIG_CLASS}.txt" && 
         pip install -r "reqs/requirements-${CONFIG_CLASS}.txt" --upgrade
     }
 
     setup_db() {
-        CONFIG_CLASS=`$PYTHON_BINARY -m config`
-        DB_DATABASE=`$PYTHON_BINARY -m config -k DB_DATABASE`
-        DB_USERNAME=`$PYTHON_BINARY -m config -k DB_USERNAME`
+        CONFIG_CLASS=`$__PYTHON_BINARY -m config`
+        DB_DATABASE=`$__PYTHON_BINARY -m config -k DB_DATABASE`
+        DB_USERNAME=`$__PYTHON_BINARY -m config -k DB_USERNAME`
 
         case $CONFIG_CLASS in
             MySQLStd)  echo "CREATE DATABASE IF NOT EXISTS ${DB_DATABASE}" | mysql -u ${DB_USERNAME};;
@@ -31,6 +32,7 @@ if [ -e '.env' ]; then
             deactivate;
             unset -f setup_db;
             unset -f upgrade;
+            unset -f __PYTHON_BINARY;
             unset -f PYTHON_BINARY;
             
             cd() {
