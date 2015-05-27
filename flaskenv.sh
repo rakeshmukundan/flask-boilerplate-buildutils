@@ -32,8 +32,6 @@ if [ -e '.env' ]; then
             deactivate;
             unset -f setup_db;
             unset -f upgrade;
-            unset -f __PYTHON_BINARY;
-            unset -f PYTHON_BINARY;
             
             cd() {
                 builtin cd "$@"
